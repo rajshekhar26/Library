@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&family=Reggae+One&display=swap"
+			rel="stylesheet"
+		/>
+		<script
+			src="https://kit.fontawesome.com/e7dc570521.js"
+			crossorigin="anonymous"
+		></script>
+		<title>Library</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body class="body-light">
+		<header>
+			<h1>Library</h1>
+		</header>
+
+		<main>
+			<button class="btn-add-book">New book</button>
+
+			<form id="form">
+				<button class="btn-close-form">
+					<i class="fas fa-times"></i>
+				</button>
+				<div class="form-container">
+					<label class="input-container" for="title"
+						>Title<input
+							type="text"
+							id="title"
+							placeholder="Book title"
+							required
+					/></label>
+					<label class="input-container" for="author"
+						>Author<input
+							type="text"
+							id="author"
+							placeholder="Book author"
+							required
+					/></label>
+					<label class="input-container" for="pages"
+						>Pages<input
+							type="number"
+							id="pages"
+							placeholder="Number of pages"
+							required
+					/></label>
+					<label
+						class="checkbox-container"
+						class="input-container"
+						for="read"
+						>Read<input type="checkbox" id="read"
+					/></label>
+					<button id="submit">Add book</button>
+				</div>
+			</form>
+			<div id="book-list"></div>
+		</main>
+
+		<script src="script.js"></script>
+	</body>
+</html>
