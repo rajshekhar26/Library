@@ -6,23 +6,11 @@ const title = document.getElementById('title');
 const author = document.getElementById('author');
 const pages = document.getElementById('pages');
 const read = document.getElementById('read');
-
-function displayForm() {
-	if (!form.classList.contains('form')) {
-		form.classList.add('form');
-		form.reset();
-	}
-}
-
-function closeForm() {
-	if (form.classList.contains('form')) {
-		form.classList.remove('form');
-		form.reset();
-	}
-}
-
-btnAddBook.addEventListener('click', displayForm);
-btnCloseForm.addEventListener('click', closeForm);
+let div;
+let appendDiv;
+let h3;
+let paragraph;
+let btn;
 
 const myLibrary = [];
 
@@ -33,102 +21,160 @@ function Book(title, author, pages, read) {
 	this.read = read;
 }
 
-function addBookToLibrary(e) {
-	e.preventDefault();
+const hasFormClass = () => form.classList.contains('form');
+
+const removeFormClass = () => {
+	form.classList.remove('form');
+	form.reset();
+};
+
+const addFormClass = () => {
+	form.classList.add('form');
+	form.reset();
+};
+
+const displayForm = () => {
+	hasFormClass() ? removeFormClass() : addFormClass();
+};
+
+const addBookToLibrary = (event) => {
+	event.preventDefault();
 	myLibrary.push(
 		new Book(title.value, author.value, pages.value, read.checked)
 	);
-	displayBook();
-	form.classList.remove('form');
-}
+};
 
-form.addEventListener('submit', addBookToLibrary);
+const createBookContainer = (index) => {
+	div = document.createElement('div');
+	appendDiv = bookList.appendChild(div);
+	appendDiv.classList.add('book-container');
+	appendDiv.setAttribute('data-index', index);
+	myLibrary[index].index = index;
+};
 
-function deleteBook(e) {
+const createH3 = (appendDiv) => {
+	h3 = document.createElement('h3');
+	appendH3 = appendDiv.appendChild(h3);
+};
+
+const createP = (appendDiv) => {
+	paragraph = document.createElement('p');
+	appendP = appendDiv.appendChild(paragraph);
+};
+
+const createBtn = (appendDiv) => {
+	btn = document.createElement('button');
+	appendBtn = appendDiv.appendChild(btn);
+};
+
+const createTitle = (appendDiv, index) => {
+	createH3(appendDiv);
+	appendDiv.appendChild(appendH3).textContent = myLibrary[index].title;
+};
+
+const createAuthor = (appendDiv, index) => {
+	createP(appendDiv);
+	appendDiv.appendChild(
+		appendP
+	).textContent = `By ${myLibrary[index].author}`;
+	appendP.classList.add('book-author');
+};
+
+const createPages = (appendDiv, index) => {
+	createP(appendDiv);
+	let pages = +myLibrary[index].pages;
+	if (pages === 1) {
+		appendDiv.appendChild(appendP).textContent = `1 page`;
+	} else if (pages > 1) {
+		appendDiv.appendChild(appendP).textContent = `${pages} pages`;
+	}
+};
+
+const createReadBtn = (appendDiv, index) => {
+	createBtn(appendDiv);
+	appendBtn.classList.add('read-btn');
+	if (isRead(index)) {
+		appendBtn.textContent = 'Read';
+	} else {
+		appendBtn.textContent = `Unread`;
+	}
+	appendBtn.setAttribute('data-index', index);
+};
+
+const createDeleteBtn = (appendDiv, index) => {
+	createBtn(appendDiv);
+	appendBtn.classList.add('delete-btn');
+	appendBtn.textContent = 'Delete';
+	appendBtn.setAttribute('data-index', index);
+};
+
+const displayBook = () => {
+	bookList.textContent = '';
+	for (let i = 0; i < myLibrary.length; i++) {
+		createBookContainer(i);
+		createTitle(appendDiv, i);
+		createAuthor(appendDiv, i);
+		createPages(appendDiv, i);
+		createReadBtn(appendDiv, i);
+		createDeleteBtn(appendDiv, i);
+	}
+};
+
+const deleteBookFromContainer = (event) => {
 	const containerIndex = document.querySelector(
-		`.book-container[data-index = '${e.target.dataset.index}']`
+		`.book-container[data-index = '${event.target.dataset.index}']`
 	);
-
 	if (containerIndex) {
 		containerIndex.remove();
 	}
+};
 
-	for (let j = 0; j < myLibrary.length; j++) {
-		if (e.target.dataset.index == myLibrary[j].index) {
-			myLibrary.splice(j, 1);
+const deleteBookFromLibrary = (event) => {
+	myLibrary.forEach((book, index) => {
+		if (+event.target.dataset.index === book.index) {
+			myLibrary.splice(index, 1);
 		}
-	}
-}
+	});
+};
 
-function toggleRead(e) {
-	let readBtn = document.querySelectorAll('.read-btn');
-	for (let j = 0; j < myLibrary.length; j++) {
-		if (e.target.dataset.index == myLibrary[j].index) {
-			if (myLibrary[j].read) {
-				readBtn[j].textContent = `Unread`;
-				myLibrary[j].read = false;
-			} else {
-				readBtn[j].textContent = 'Read';
-				myLibrary[j].read = true;
-			}
-		}
-	}
-}
-
-function displayBook() {
-	bookList.textContent = '';
-
-	for (let i = 0; i < myLibrary.length; i++) {
-		const createDiv = document.createElement('div');
-		const appendDiv = bookList.appendChild(createDiv);
-		appendDiv.classList.add('book-container');
-		appendDiv.setAttribute('data-index', i);
-		myLibrary[i].index = i;
-
-		const createTitle = document.createElement('h3');
-		const appendTitle = appendDiv.appendChild(createTitle);
-		appendDiv.appendChild(appendTitle).textContent = myLibrary[i].title;
-
-		const createAuthor = document.createElement('p');
-		const appendAuthor = appendDiv.appendChild(createAuthor);
-		appendDiv.appendChild(
-			appendAuthor
-		).textContent = `By ${myLibrary[i].author}`;
-		appendAuthor.classList.add('book-author');
-
-		const createPages = document.createElement('p');
-		const appendPages = appendDiv.appendChild(createPages);
-		appendDiv.appendChild(
-			appendPages
-		).textContent = `${myLibrary[i].pages} Pages`;
-
-		const createReadBtn = document.createElement('button');
-		const appendReadBtn = appendDiv.appendChild(createReadBtn);
-		appendReadBtn.classList.add('read-btn');
-
-		if (myLibrary[i].read) {
-			appendReadBtn.textContent = 'Read';
-		} else {
-			appendReadBtn.textContent = `Unread`;
-		}
-
-		appendReadBtn.setAttribute('data-index', i);
-
-		let createDelBtn = document.createElement('button');
-		const appendDelBtn = appendDiv.appendChild(createDelBtn);
-		appendDelBtn.classList.add('delete-btn');
-		appendDelBtn.textContent = 'Delete';
-		appendDelBtn.setAttribute('data-index', i);
-	}
-
+const deleteBook = () => {
 	let deleteBtn = document.querySelectorAll('.delete-btn');
+	deleteBtn.forEach((btn) => {
+		btn.addEventListener('click', (event) => {
+			deleteBookFromContainer(event);
+			deleteBookFromLibrary(event);
+		});
+	});
+};
+
+const isRead = (index) => myLibrary[index].read;
+
+const toggleUnread = (btn, index) => {
+	btn.textContent = `Unread`;
+	myLibrary[index].read = false;
+};
+
+const toggleRead = (btn, index) => {
+	btn.textContent = 'Read';
+	myLibrary[index].read = true;
+};
+
+const toggleReadStatus = () => {
 	let readBtn = document.querySelectorAll('.read-btn');
+	readBtn.forEach((btn, index) => {
+		btn.addEventListener('click', () => {
+			isRead(index) ? toggleUnread(btn, index) : toggleRead(btn, index);
+		});
+	});
+};
 
-	for (let i = 0; i < readBtn.length; i++) {
-		readBtn[i].addEventListener('click', toggleRead);
-	}
+btnAddBook.addEventListener('click', displayForm);
+btnCloseForm.addEventListener('click', displayForm);
 
-	for (let i = 0; i < deleteBtn.length; i++) {
-		deleteBtn[i].addEventListener('click', deleteBook);
-	}
-}
+form.addEventListener('submit', (event) => {
+	addBookToLibrary(event);
+	displayBook();
+	removeFormClass();
+	deleteBook(event);
+	toggleReadStatus();
+});
