@@ -1,6 +1,6 @@
 const btnAddBook = document.querySelector('.btn-add-book');
 const form = document.querySelector('form');
-const myLibrary = [];
+let myLibrary = [];
 
 const hasWidth = () => form.style.width === '100%';
 
@@ -36,8 +36,14 @@ const addBookToLibrary = (event) => {
 	);
 };
 
-const addIdToLibrary = (index) => {
-	myLibrary[index].id = index;
+const addIdToLibrary = () => {
+	myLibrary.forEach((book, index) => {
+		book.id = index;
+	});
+};
+
+const addBookToLS = () => {
+	localStorage.setItem('myLibrary', JSON.stringify(myLibrary));
 };
 
 const isRead = (index) => myLibrary[index].read;
@@ -75,44 +81,43 @@ const createPages = (appendDiv, index) => {
 	appendDiv.appendChild(appendP).textContent = `${pages} pages`;
 };
 
-const createReadBtn = (appendDiv, index) => {
+const createReadBtn = (appendDiv, index, id) => {
 	createBtn(appendDiv);
 	appendBtn.classList.add('read-btn');
 	isRead(index)
 		? (appendBtn.textContent = 'Read')
 		: (appendBtn.textContent = `Unread`);
-	appendBtn.setAttribute('data-index', index);
+	appendBtn.setAttribute('data-index', id);
 };
 
-const createDeleteBtn = (appendDiv, index) => {
+const createDeleteBtn = (appendDiv, id) => {
 	createBtn(appendDiv);
 	appendBtn.classList.add('delete-btn');
 	appendBtn.textContent = 'Delete';
-	appendBtn.setAttribute('data-index', index);
+	appendBtn.setAttribute('data-index', id);
 };
 
-const createBookInfo = (appendDiv, index) => {
+const createBookInfo = (appendDiv, index, id) => {
 	createTitle(appendDiv, index);
 	createAuthor(appendDiv, index);
 	createPages(appendDiv, index);
-	createReadBtn(appendDiv, index);
-	createDeleteBtn(appendDiv, index);
+	createReadBtn(appendDiv, index, id);
+	createDeleteBtn(appendDiv, id);
 };
 
-const createBookContainer = (bookList, index) => {
+const createBookContainer = (bookList, index, id) => {
 	const div = document.createElement('div');
 	appendDiv = bookList.appendChild(div);
 	appendDiv.classList.add('book-container');
-	appendDiv.setAttribute('data-index', index);
-	createBookInfo(appendDiv, index);
+	appendDiv.setAttribute('data-index', id);
+	createBookInfo(appendDiv, index, id);
 };
 
 const displayBook = () => {
 	const bookList = document.getElementById('book-list');
 	bookList.textContent = '';
 	for (let i = 0; i < myLibrary.length; i++) {
-		addIdToLibrary(i);
-		createBookContainer(bookList, i);
+		createBookContainer(bookList, i, myLibrary[i].id);
 	}
 };
 
@@ -135,45 +140,83 @@ const deleteBookFromLibrary = (event) => {
 	});
 };
 
+const deleteBookfromLS = (event) => {
+	let books = JSON.parse(localStorage.getItem('myLibrary'));
+	books.forEach((book, index) => {
+		isDataIndexEqualBookId(event, book) && books.splice(index, 1);
+	});
+	localStorage.clear();
+	localStorage.setItem('myLibrary', JSON.stringify(books));
+};
+
 const deleteBook = () => {
 	let deleteBtn = document.querySelectorAll('.delete-btn');
 	deleteBtn.forEach((btn) => {
 		btn.addEventListener('click', (event) => {
 			deleteBookFromContainer(event);
 			deleteBookFromLibrary(event);
+			deleteBookfromLS(event);
 		});
 	});
 };
 
-const toggleUnread = (btn, index) => {
+const toggleUnread = (btn, book) => {
 	btn.textContent = `Unread`;
-	myLibrary[index].read = false;
+	book.read = false;
 };
 
-const toggleRead = (btn, index) => {
+const toggleRead = (btn, book) => {
 	btn.textContent = 'Read';
-	myLibrary[index].read = true;
+	book.read = true;
 };
 
-const toggleReadStatus = (btn, index) => {
-	isRead(index) ? toggleUnread(btn, index) : toggleRead(btn, index);
+const toggleReadStatusLS = (event) => {
+	let books = JSON.parse(localStorage.getItem('myLibrary'));
+	books.forEach((book) => {
+		if (isDataIndexEqualBookId(event, book)) {
+			book.read ? (book.read = false) : (book.read = true);
+		}
+	});
+	localStorage.clear();
+	localStorage.setItem('myLibrary', JSON.stringify(books));
+};
+
+const toggleReadStatus = (btn, event) => {
+	myLibrary.forEach((book) => {
+		if (isDataIndexEqualBookId(event, book)) {
+			book.read ? toggleUnread(btn, book) : toggleRead(btn, book);
+			toggleReadStatusLS(event);
+		}
+	});
 };
 
 const checkReadStatus = () => {
 	let readBtn = document.querySelectorAll('.read-btn');
 	readBtn.forEach((btn) => {
 		btn.addEventListener('click', (event) => {
-			myLibrary.forEach((book, index) => {
-				isDataIndexEqualBookId(event, book) && toggleReadStatus(btn, index);
-			});
+			toggleReadStatus(btn, event);
 		});
 	});
 };
 
 form.addEventListener('submit', (event) => {
 	addBookToLibrary(event);
+	addIdToLibrary();
+	addBookToLS();
 	displayBook();
 	hideForm();
-	deleteBook(event);
+	deleteBook();
 	checkReadStatus();
 });
+
+const getBooksFromLS = () => {
+	let books = JSON.parse(localStorage.getItem('myLibrary'));
+	if (books) {
+		myLibrary = [...books];
+		displayBook();
+		deleteBook();
+		checkReadStatus();
+	}
+};
+
+window.addEventListener('load', getBooksFromLS);
