@@ -36,14 +36,11 @@ const addBookToLibrary = (event) => {
 	);
 };
 
-const createBookContainer = (bookList, index) => {
-	const div = document.createElement('div');
-	appendDiv = bookList.appendChild(div);
-	appendDiv.classList.add('book-container');
-	appendDiv.setAttribute('data-index', index);
-	myLibrary[index].index = index;
-	return appendDiv;
+const addIdToLibrary = (index) => {
+	myLibrary[index].id = index;
 };
+
+const isRead = (index) => myLibrary[index].read;
 
 const createH3 = (appendDiv) => {
 	const h3 = document.createElement('h3');
@@ -74,22 +71,16 @@ const createAuthor = (appendDiv, index) => {
 
 const createPages = (appendDiv, index) => {
 	createP(appendDiv);
-	let pages = +myLibrary[index].pages;
-	if (pages === 1) {
-		appendDiv.appendChild(appendP).textContent = `1 page`;
-	} else if (pages > 1) {
-		appendDiv.appendChild(appendP).textContent = `${pages} pages`;
-	}
+	let pages = parseInt(myLibrary[index].pages);
+	appendDiv.appendChild(appendP).textContent = `${pages} pages`;
 };
 
 const createReadBtn = (appendDiv, index) => {
 	createBtn(appendDiv);
 	appendBtn.classList.add('read-btn');
-	if (isRead(index)) {
-		appendBtn.textContent = 'Read';
-	} else {
-		appendBtn.textContent = `Unread`;
-	}
+	isRead(index)
+		? (appendBtn.textContent = 'Read')
+		: (appendBtn.textContent = `Unread`);
 	appendBtn.setAttribute('data-index', index);
 };
 
@@ -100,33 +91,47 @@ const createDeleteBtn = (appendDiv, index) => {
 	appendBtn.setAttribute('data-index', index);
 };
 
+const createBookInfo = (appendDiv, index) => {
+	createTitle(appendDiv, index);
+	createAuthor(appendDiv, index);
+	createPages(appendDiv, index);
+	createReadBtn(appendDiv, index);
+	createDeleteBtn(appendDiv, index);
+};
+
+const createBookContainer = (bookList, index) => {
+	const div = document.createElement('div');
+	appendDiv = bookList.appendChild(div);
+	appendDiv.classList.add('book-container');
+	appendDiv.setAttribute('data-index', index);
+	createBookInfo(appendDiv, index);
+};
+
 const displayBook = () => {
 	const bookList = document.getElementById('book-list');
 	bookList.textContent = '';
 	for (let i = 0; i < myLibrary.length; i++) {
-		let appendDiv = createBookContainer(bookList, i);
-		createTitle(appendDiv, i);
-		createAuthor(appendDiv, i);
-		createPages(appendDiv, i);
-		createReadBtn(appendDiv, i);
-		createDeleteBtn(appendDiv, i);
+		addIdToLibrary(i);
+		createBookContainer(bookList, i);
 	}
 };
 
+const isDataIndexEqualBookId = (event, book) => {
+	return parseInt(event.target.dataset.index) === book.id;
+};
+
 const deleteBookFromContainer = (event) => {
-	const containerIndex = document.querySelector(
+	const containerDataIndex = document.querySelector(
 		`.book-container[data-index = '${event.target.dataset.index}']`
 	);
-	if (containerIndex) {
-		containerIndex.remove();
+	if (containerDataIndex) {
+		containerDataIndex.remove();
 	}
 };
 
 const deleteBookFromLibrary = (event) => {
 	myLibrary.forEach((book, index) => {
-		if (+event.target.dataset.index === book.index) {
-			myLibrary.splice(index, 1);
-		}
+		isDataIndexEqualBookId(event, book) && myLibrary.splice(index, 1);
 	});
 };
 
@@ -140,8 +145,6 @@ const deleteBook = () => {
 	});
 };
 
-const isRead = (index) => myLibrary[index].read;
-
 const toggleUnread = (btn, index) => {
 	btn.textContent = `Unread`;
 	myLibrary[index].read = false;
@@ -152,11 +155,17 @@ const toggleRead = (btn, index) => {
 	myLibrary[index].read = true;
 };
 
-const toggleReadStatus = () => {
+const toggleReadStatus = (btn, index) => {
+	isRead(index) ? toggleUnread(btn, index) : toggleRead(btn, index);
+};
+
+const checkReadStatus = () => {
 	let readBtn = document.querySelectorAll('.read-btn');
-	readBtn.forEach((btn, index) => {
-		btn.addEventListener('click', () => {
-			isRead(index) ? toggleUnread(btn, index) : toggleRead(btn, index);
+	readBtn.forEach((btn) => {
+		btn.addEventListener('click', (event) => {
+			myLibrary.forEach((book, index) => {
+				isDataIndexEqualBookId(event, book) && toggleReadStatus(btn, index);
+			});
 		});
 	});
 };
@@ -166,5 +175,5 @@ form.addEventListener('submit', (event) => {
 	displayBook();
 	hideForm();
 	deleteBook(event);
-	toggleReadStatus();
+	checkReadStatus();
 });
