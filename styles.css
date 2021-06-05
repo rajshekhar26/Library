@@ -79,6 +79,7 @@ button:focus {
 	background-color: var(--primary);
 	transition: transform 0.1s ease-in-out;
 	z-index: 1;
+	-webkit-tap-highlight-color: transparent;
 }
 
 .btn-add-book:focus,
