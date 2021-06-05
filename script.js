@@ -1,17 +1,26 @@
 const btnAddBook = document.querySelector('.btn-add-book');
 const form = document.querySelector('form');
-const bookList = document.getElementById('book-list');
-const title = document.getElementById('title');
-const author = document.getElementById('author');
-const pages = document.getElementById('pages');
-const read = document.getElementById('read');
-let div;
-let appendDiv;
-let h3;
-let paragraph;
-let btn;
-
 const myLibrary = [];
+
+const hasWidth = () => form.style.width === '100%';
+
+const hideForm = () => {
+	form.style.width = '0';
+	btnAddBook.style.transform = 'rotate(0deg)';
+	form.reset();
+};
+
+const showForm = () => {
+	form.style.width = '100%';
+	btnAddBook.style.transform = 'rotate(45deg)';
+	form.reset();
+};
+
+const displayForm = () => {
+	hasWidth() ? hideForm() : showForm();
+};
+
+btnAddBook.addEventListener('click', displayForm);
 
 function Book(title, author, pages, read) {
 	this.title = title;
@@ -20,26 +29,6 @@ function Book(title, author, pages, read) {
 	this.read = read;
 }
 
-const hasWidth = () => form.style.width === '100%';
-
-const removeFormClass = () => {
-	form.style.width = '0';
-	btnAddBook.style.transform = 'rotate(0deg)';
-	form.reset();
-};
-
-const addFormClass = () => {
-	form.style.width = '100%';
-	btnAddBook.style.transform = 'rotate(45deg)';
-	form.reset();
-};
-
-const displayForm = () => {
-	hasWidth() ? removeFormClass() : addFormClass();
-};
-
-btnAddBook.addEventListener('click', displayForm);
-
 const addBookToLibrary = (event) => {
 	event.preventDefault();
 	myLibrary.push(
@@ -47,28 +36,27 @@ const addBookToLibrary = (event) => {
 	);
 };
 
-let book1 = new Book(title.value, author.value, pages.value, read.checked);
-
-const createBookContainer = (index) => {
-	div = document.createElement('div');
+const createBookContainer = (bookList, index) => {
+	const div = document.createElement('div');
 	appendDiv = bookList.appendChild(div);
 	appendDiv.classList.add('book-container');
 	appendDiv.setAttribute('data-index', index);
 	myLibrary[index].index = index;
+	return appendDiv;
 };
 
 const createH3 = (appendDiv) => {
-	h3 = document.createElement('h3');
+	const h3 = document.createElement('h3');
 	appendH3 = appendDiv.appendChild(h3);
 };
 
 const createP = (appendDiv) => {
-	paragraph = document.createElement('p');
+	const paragraph = document.createElement('p');
 	appendP = appendDiv.appendChild(paragraph);
 };
 
 const createBtn = (appendDiv) => {
-	btn = document.createElement('button');
+	const btn = document.createElement('button');
 	appendBtn = appendDiv.appendChild(btn);
 	appendBtn.classList.add('btn');
 };
@@ -113,9 +101,10 @@ const createDeleteBtn = (appendDiv, index) => {
 };
 
 const displayBook = () => {
+	const bookList = document.getElementById('book-list');
 	bookList.textContent = '';
 	for (let i = 0; i < myLibrary.length; i++) {
-		createBookContainer(i);
+		let appendDiv = createBookContainer(bookList, i);
 		createTitle(appendDiv, i);
 		createAuthor(appendDiv, i);
 		createPages(appendDiv, i);
@@ -175,7 +164,7 @@ const toggleReadStatus = () => {
 form.addEventListener('submit', (event) => {
 	addBookToLibrary(event);
 	displayBook();
-	removeFormClass();
+	hideForm();
 	deleteBook(event);
 	toggleReadStatus();
 });
