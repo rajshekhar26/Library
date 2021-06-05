@@ -1,5 +1,4 @@
 const btnAddBook = document.querySelector('.btn-add-book');
-const btnCloseForm = document.querySelector('.btn-close-form');
 const form = document.querySelector('form');
 const bookList = document.getElementById('book-list');
 const title = document.getElementById('title');
@@ -21,21 +20,25 @@ function Book(title, author, pages, read) {
 	this.read = read;
 }
 
-const hasFormClass = () => form.classList.contains('form');
+const hasWidth = () => form.style.width === '100%';
 
 const removeFormClass = () => {
-	form.classList.remove('form');
+	form.style.width = '0';
+	btnAddBook.style.transform = 'rotate(0deg)';
 	form.reset();
 };
 
 const addFormClass = () => {
-	form.classList.add('form');
+	form.style.width = '100%';
+	btnAddBook.style.transform = 'rotate(45deg)';
 	form.reset();
 };
 
 const displayForm = () => {
-	hasFormClass() ? removeFormClass() : addFormClass();
+	hasWidth() ? removeFormClass() : addFormClass();
 };
+
+btnAddBook.addEventListener('click', displayForm);
 
 const addBookToLibrary = (event) => {
 	event.preventDefault();
@@ -67,6 +70,7 @@ const createP = (appendDiv) => {
 const createBtn = (appendDiv) => {
 	btn = document.createElement('button');
 	appendBtn = appendDiv.appendChild(btn);
+	appendBtn.classList.add('btn');
 };
 
 const createTitle = (appendDiv, index) => {
@@ -167,9 +171,6 @@ const toggleReadStatus = () => {
 		});
 	});
 };
-
-btnAddBook.addEventListener('click', displayForm);
-btnCloseForm.addEventListener('click', displayForm);
 
 form.addEventListener('submit', (event) => {
 	addBookToLibrary(event);
