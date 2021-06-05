@@ -1,6 +1,6 @@
 const btnAddBook = document.querySelector('.btn-add-book');
 const btnCloseForm = document.querySelector('.btn-close-form');
-const form = document.getElementById('form');
+const form = document.querySelector('form');
 const bookList = document.getElementById('book-list');
 const title = document.getElementById('title');
 const author = document.getElementById('author');
@@ -44,6 +44,8 @@ const addBookToLibrary = (event) => {
 	);
 };
 
+let book1 = new Book(title.value, author.value, pages.value, read.checked);
+
 const createBookContainer = (index) => {
 	div = document.createElement('div');
 	appendDiv = bookList.appendChild(div);
@@ -74,9 +76,7 @@ const createTitle = (appendDiv, index) => {
 
 const createAuthor = (appendDiv, index) => {
 	createP(appendDiv);
-	appendDiv.appendChild(
-		appendP
-	).textContent = `By ${myLibrary[index].author}`;
+	appendDiv.appendChild(appendP).textContent = `By ${myLibrary[index].author}`;
 	appendP.classList.add('book-author');
 };
 

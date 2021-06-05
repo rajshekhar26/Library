@@ -1,10 +1,4 @@
-* {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-}
-
-.body-light {
+:root {
 	--white1: #fff;
 	--white2: #f0f0f0;
 	--white3: #ddd;
@@ -12,6 +6,12 @@
 	--black2: #222;
 	--black3: #333;
 	--black4: #444;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 body {
@@ -147,13 +147,8 @@ input:invalid {
 	box-shadow: 0 0 0 2px rgba(255, 0, 0, 0.5);
 }
 
-.checkbox-container {
-	display: flex;
-	margin: 1.5em 0;
-}
-
 input[type='checkbox'] {
-	margin-left: 1em;
+	margin: 2em 1em;
 }
 
 #book-list {
