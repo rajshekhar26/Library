@@ -3,8 +3,6 @@
 	--white2: #eee;
 	--black1: #111;
 	--black2: #333;
-	--primary: #ec4646;
-	--primary-alt: #e92a2a;
 	--ff-body: 'Poppins', sans-serif;
 }
 
@@ -27,18 +25,18 @@ body {
 h1,
 h2,
 h3 {
+	color: var(--black1);
 	line-height: 1.2;
 }
 
 h1 {
-	color: var(--white1);
 	text-align: center;
 	font-size: 2.5rem;
 }
 
 header {
 	padding: 1.5em 0;
-	background-color: var(--primary);
+	background-color: var(--white1);
 	box-shadow: 0 0.2em 0.2em rgba(0, 0, 0, 0.1);
 }
 
@@ -76,15 +74,9 @@ button:focus {
 	height: 2.5em;
 	font-size: 1.5rem;
 	border-radius: 50%;
-	background-color: var(--primary);
 	transition: transform 0.1s ease-in-out;
 	z-index: 1;
 	-webkit-tap-highlight-color: transparent;
-}
-
-.btn-add-book:focus,
-.btn-add-book:hover {
-	background-color: var(--primary-alt);
 }
 
 form {
