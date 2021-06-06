@@ -13,6 +13,7 @@ const hideForm = () => {
 const showForm = () => {
 	form.style.width = '100%';
 	btnAddBook.style.transform = 'rotate(45deg)';
+	title.focus();
 	form.reset();
 };
 
